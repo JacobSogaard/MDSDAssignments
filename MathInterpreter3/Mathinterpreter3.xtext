@@ -1,0 +1,44 @@
+grammar org.xtext.example.Mathinterpreter3 with org.eclipse.xtext.common.Terminals
+
+generate mathinterpreter3 "http://www.xtext.org/example/Mathinterpreter3"
+
+MathGen:
+	declarations+=Declaration*
+;
+
+Declaration:
+	'result' label=Label 'is' exp=Exp
+;
+
+Label returns String:
+	{String} value=STRING
+;
+
+Exp returns Expression:
+	Factor (('+' {Plus.left=current} | '-' {Minus.left=current}) right=Factor)*
+;
+
+Factor returns Expression:
+	Primary (('*' {Mult.left=current} | '/' {Div.left=current}) right=Primary)*	
+;
+
+Primary returns Expression:
+	Number | Parenthesis | VariableBinding | VariableUse
+;
+
+VariableUse returns Expression:
+	{Var} id=ID
+;
+
+VariableBinding returns Expression:
+	{Let} 'let' id=ID '=' binding=Exp 'in' body=Exp 'end'
+;
+
+Parenthesis returns Expression:
+	'(' Exp ')'
+;
+
+Number returns Expression:
+	{Num} value=INT
+;
+
